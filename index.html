@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Quantumilion — AI-Native Infrastructure for Modern Applications</title>
+    <meta
+      name="description"
+      content="Quantumilion is an AI-native infrastructure control plane. Deploy applications, provision infrastructure and operate production workloads from one intelligent control plane."
+    />
+    <meta
+      name="keywords"
+      content="Quantumilion, AI infrastructure, AI infrastructure platform, cloud infrastructure automation, developer infrastructure platform, autonomous infrastructure, AI DevOps, AI cloud platform, infrastructure control plane"
+    />
+
+    <!-- Canonical points at where the site is actually served. Flip this to
+         https://quantumilion.com/ only once that domain resolves to this
+         content: a canonical naming a URL that 404s tells a crawler to index
+         nothing. -->
+    <link rel="canonical" href="https://kubegraf.github.io/quantumilion.com/" />
+
+    <!-- Dark-first, so the dark value is the one without a media query fallback
+         problem: both are declared, and the browser picks. -->
+    <meta name="theme-color" content="#08090b" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="color-scheme" content="dark light" />
+
+    <link rel="icon" href="/brand/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+
+    <!-- Same-origin fonts. Preloading removes the round trip that would
+         otherwise wait for the CSS to be parsed first. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/geist/Geist-Variable.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/geist/GeistMono-Variable.woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Quantumilion" />
+    <meta property="og:title" content="Quantumilion — AI-Native Infrastructure for Modern Applications" />
+    <meta
+      property="og:description"
+      content="Your infrastructure, finally intelligent. Deploy applications, provision infrastructure and operate production workloads through one intelligent control plane."
+    />
+    <meta property="og:url" content="https://kubegraf.github.io/quantumilion.com/" />
+    <meta property="og:image" content="https://kubegraf.github.io/quantumilion.com/brand/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Quantumilion — AI-native infrastructure control plane" />
+    <meta property="og:locale" content="en_GB" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Quantumilion — AI-Native Infrastructure for Modern Applications" />
+    <meta
+      name="twitter:description"
+      content="Your infrastructure, finally intelligent. One intelligent control plane for deploying, provisioning and operating production systems."
+    />
+    <meta name="twitter:image" content="https://kubegraf.github.io/quantumilion.com/brand/og.png" />
+
+    <!-- Applies the stored theme before first paint. Without this the page
+         renders in the wrong theme for a frame and then flips, which reads as a
+         bug rather than as a preference being honoured. -->
+    <script>
+      try {
+        var t = localStorage.getItem("quantumilion-theme");
+        if (t === "dark" || t === "light") document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Quantumilion",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web",
+        "url": "https://kubegraf.github.io/quantumilion.com/",
+        "description": "AI-native infrastructure control plane for deploying applications, provisioning infrastructure and operating production workloads.",
+        "publisher": { "@type": "Organization", "name": "Orkastor Limited" }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

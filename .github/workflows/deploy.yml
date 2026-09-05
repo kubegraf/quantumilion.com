@@ -1,0 +1,117 @@
+# Build the landing page and publish it to GitHub Pages.
+#
+# ⚠ THIS REPO USES `runs-on: ubuntu-latest`, NOT `kubegraf-org-runners`.
+# Read this before "fixing" it back to the org default.
+#
+# The org policy is that every workflow uses the self-hosted pool and never
+# ubuntu-latest. It cannot apply here. The Default runner group is set
+# `allows_public_repositories: false`, and this repo has to be PUBLIC for
+# https://kubegraf.github.io/quantumilion.com/ to be reachable without a GitHub
+# login. A job here targeting kubegraf-org-runners is never assigned a runner:
+# it sits in the queue until somebody cancels it, with no error in the log to
+# read. `kubegraf/agentenx.com` hit this first and carries the same exception.
+#
+# The alternative was flipping allows_public_repositories on the shared group,
+# which would let any public repo — fork pull requests included — execute on
+# runners that sit inside the VPC. That is a far wider blast radius than one
+# static site, so the deviation is kept here instead.
+#
+# The reasons behind the policy do not apply to this repo: no secrets, no VPC
+# egress, no cluster access. It builds a static page from public source. If any
+# of that stops being true, this needs revisiting rather than extending.
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Pages needs these three. `id-token` is what the deploy step authenticates with.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race. Not cancel-in-progress: a half-finished deploy
+# that gets cancelled can leave the site on a partial artifact.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest      # see the header — deliberate, public repo
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck and build
+        run: npm run build
+
+      - name: Refuse to publish a build with the wrong base path
+        # The site is served from a SUBPATH, not a domain root. `base` in
+        # vite.config.ts must stay equal to the repo name. Get it wrong and the
+        # deploy still goes green while every visitor gets a page with no CSS,
+        # no fonts and no JavaScript — which reads as a broken build rather than
+        # a wrong path. This check is cheap and it catches exactly that.
+        run: |
+          set -euo pipefail
+          if ! grep -q 'src="/quantumilion.com/assets/' dist/index.html; then
+            echo "::error::dist/index.html does not reference /quantumilion.com/assets/ — check base in vite.config.ts"
+            grep -oE '(href|src)="[^"]*"' dist/index.html | head -20
+            exit 1
+          fi
+          echo "base path ok"
+
+      - name: Check the brand is spelled correctly everywhere
+        # The one thing a landing page cannot get wrong. These misspellings are
+        # each a plausible typo and none of them should ever ship.
+        run: |
+          set -euo pipefail
+          if grep -rniE 'quantumillion|quantiumilion|quantum milion|quantum million|quantumilions' dist/ ; then
+            echo "::error::misspelled brand found in the built output — it is always Quantumilion"
+            exit 1
+          fi
+          echo "brand ok"
+
+      - name: Jekyll must not eat the build
+        # Pages runs Jekyll by default, which skips files and folders beginning
+        # with an underscore.
+        run: touch dist/.nojekyll
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest      # see the header — deliberate, public repo
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Confirm the published site actually answers
+        # A green deploy that serves a 404 is the failure this catches.
+        run: |
+          set -euo pipefail
+          URL="https://kubegraf.github.io/quantumilion.com/"
+          for i in $(seq 1 10); do
+            code="$(curl -s -o /dev/null -w '%{http_code}' -L "$URL" || true)"
+            echo "attempt $i: HTTP $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 12
+          done
+          echo "::error::$URL did not answer 200"
+          exit 1

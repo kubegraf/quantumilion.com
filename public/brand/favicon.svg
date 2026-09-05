@@ -1,0 +1,10 @@
+<!-- Favicon: the SIMPLIFIED mark. The four node dots of the full lattice turn
+     into mud at 16px, so this drawing drops them and keeps the diamond, the
+     core and the tail. Background is baked in because a transparent favicon
+     disappears against a dark browser chrome. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="7" fill="#08090B"/>
+  <path d="M16 5.5 26.5 16 16 26.5 5.5 16 16 5.5Z" fill="none" stroke="#F2F5F7" stroke-width="2.1" stroke-linejoin="round"/>
+  <circle cx="16" cy="16" r="4.1" fill="#22D3EE"/>
+  <path d="m19.4 19.4 5 5" stroke="#22D3EE" stroke-width="2.8" stroke-linecap="round"/>
+</svg>

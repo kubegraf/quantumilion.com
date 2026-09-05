@@ -1,0 +1,263 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Fonts ───────────────────────────────────────────────────────────────
+   Self-hosted variable Geist. No external font host: one less origin to
+   connect to, and no layout shift caused by a third party being slow. */
+@font-face {
+  font-family: "Geist";
+  src: url("/fonts/geist/Geist-Variable.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "GeistMono";
+  src: url("/fonts/geist/GeistMono-Variable.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Tokens ──────────────────────────────────────────────────────────────
+   Quantumilion is DARK-FIRST, so the dark palette is the one defined on bare
+   :root. Light is a REDEFINITION of the same names under both
+   `prefers-color-scheme: light` and `[data-theme="light"]`, so the toggle wins
+   in both directions. No colour is ever defined only inside a media query —
+   one that is disappears in the other theme.
+
+   Contrast was measured, not eyeballed. The ratios in the comments are against
+   the background the value is actually used on.
+
+   ONE accent: electric cyan. It carries two jobs and needs two tokens for
+   them, because a colour bright enough to read as text on near-black is far
+   too light to sit behind white text:
+     --accent      the FILL. Dark: #22D3EE with near-black text on top (11.17:1).
+                   Light: #0A6E88 with white text on top (5.84:1).
+     --accent-text the accent used AS text. Dark: the cyan itself (11.02:1).
+                   Light: the deep teal (5.84:1 on bg, 5.49:1 on surface).
+   If you change the accent, measure it again. */
+:root {
+  color-scheme: dark;
+
+  --bg: #08090b;
+  --surface: #0f1114;
+  --raised: #15181c;
+  --sunken: #050607;
+  --line: rgba(255, 255, 255, 0.085);
+  --line-strong: rgba(255, 255, 255, 0.17);
+
+  --ink: #f2f5f7;   /* 18.19:1 on bg */
+  --ink-2: #a6b0bc; /*  9.07:1 on bg,  8.61:1 on surface */
+  --ink-3: #828c99; /*  5.84:1 on bg,  5.22:1 on raised */
+
+  --accent: #22d3ee;
+  --accent-hover: #67e8f9;
+  --accent-text: #22d3ee;      /* 11.02:1 on bg */
+  --on-accent: #04070a;        /* 11.17:1 on the fill */
+  --accent-soft: rgba(34, 211, 238, 0.11);
+  --accent-line: rgba(34, 211, 238, 0.34);
+
+  --ok: #34d399;    /* 10.36:1 on bg */
+  --warn: #fbbf24;  /* 11.93:1 on bg */
+  --danger: #ff8a8a; /* 8.78:1 on bg */
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 30px -14px rgba(0, 0, 0, 0.75);
+  --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.55), 0 26px 60px -22px rgba(0, 0, 0, 0.9);
+  --shadow-glow: 0 0 0 1px var(--accent-line), 0 0 42px -12px rgba(34, 211, 238, 0.45);
+
+
+  /* Categorical chart series. A cost breakdown needs five fills that are told
+     apart at a glance, and the semantic tokens do not stretch that far — the
+     fifth segment ended up as a translucent accent nobody could see.
+     Every value clears 3:1 against its background (the threshold for a
+     graphical object), and each segment is ALSO labelled with its name and
+     amount, so colour is never the only channel carrying the data. */
+  --series-1: #22d3ee; /* 11.02:1 on bg */
+  --series-2: #34d399; /* 10.36:1 */
+  --series-3: #7da2ff; /*  8.05:1 */
+  --series-4: #fbbf24; /* 11.93:1 */
+  --series-5: #c084fc; /*  7.54:1 */
+
+  --grid-line: rgba(255, 255, 255, 0.038);
+  --vignette: rgba(34, 211, 238, 0.06);
+}
+
+/* System preference. Guarded so an explicit dark choice always wins. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #ffffff;
+    --surface: #f7f8fa;
+    --raised: #ffffff;
+    --sunken: #f2f4f7;
+    --line: rgba(10, 11, 13, 0.1);
+    --line-strong: rgba(10, 11, 13, 0.18);
+    --ink: #0a0b0d;   /* 19.69:1 */
+    --ink-2: #3c434d; /*  9.99:1 */
+    --ink-3: #586170; /*  6.25:1 on bg, 5.88:1 on surface */
+    --accent: #0a6e88;
+    --accent-hover: #086880;
+    --accent-text: #0a6e88; /* 5.84:1 */
+    --on-accent: #ffffff;   /* 5.84:1 on the fill */
+    --accent-soft: rgba(10, 110, 136, 0.08);
+    --accent-line: rgba(10, 110, 136, 0.3);
+    --ok: #12794a;   /* 5.44:1 */
+    --warn: #8a5300; /* 6.33:1 */
+    --danger: #a3231a; /* 7.47:1 */
+    --shadow-card: 0 1px 2px rgba(10, 11, 13, 0.05), 0 10px 30px -16px rgba(10, 11, 13, 0.18);
+    --shadow-lift: 0 2px 6px rgba(10, 11, 13, 0.06), 0 26px 60px -24px rgba(10, 11, 13, 0.26);
+    --shadow-glow: 0 0 0 1px var(--accent-line), 0 10px 40px -18px rgba(10, 110, 136, 0.4);
+
+    --series-1: #0a6e88; /* 5.84:1 on bg */
+    --series-2: #12794a; /* 5.44:1 */
+    --series-3: #2f5dbf; /* 6.11:1 */
+    --series-4: #8a5300; /* 6.33:1 */
+    --series-5: #7c3aed; /* 5.70:1 */
+    --grid-line: rgba(10, 11, 13, 0.05);
+    --vignette: rgba(10, 110, 136, 0.05);
+  }
+}
+
+/* Explicit choice. Repeated so the toggle wins in BOTH directions. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #ffffff;
+  --surface: #f7f8fa;
+  --raised: #ffffff;
+  --sunken: #f2f4f7;
+  --line: rgba(10, 11, 13, 0.1);
+  --line-strong: rgba(10, 11, 13, 0.18);
+  --ink: #0a0b0d;
+  --ink-2: #3c434d;
+  --ink-3: #586170;
+  --accent: #0a6e88;
+  --accent-hover: #086880;
+  --accent-text: #0a6e88;
+  --on-accent: #ffffff;
+  --accent-soft: rgba(10, 110, 136, 0.08);
+  --accent-line: rgba(10, 110, 136, 0.3);
+  --ok: #12794a;
+  --warn: #8a5300;
+  --danger: #a3231a;
+  --shadow-card: 0 1px 2px rgba(10, 11, 13, 0.05), 0 10px 30px -16px rgba(10, 11, 13, 0.18);
+  --shadow-lift: 0 2px 6px rgba(10, 11, 13, 0.06), 0 26px 60px -24px rgba(10, 11, 13, 0.26);
+  --shadow-glow: 0 0 0 1px var(--accent-line), 0 10px 40px -18px rgba(10, 110, 136, 0.4);
+  --series-1: #0a6e88;
+  --series-2: #12794a;
+  --series-3: #2f5dbf;
+  --series-4: #8a5300;
+  --series-5: #7c3aed;
+  --grid-line: rgba(10, 11, 13, 0.05);
+  --vignette: rgba(10, 110, 136, 0.05);
+}
+
+@layer base {
+  * { border-color: var(--line); }
+
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: theme("fontFamily.sans");
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Anchor targets land below the sticky header instead of under it. */
+  section[id] { scroll-margin-top: 88px; }
+
+  ::selection { background: var(--accent); color: var(--on-accent); }
+
+  /* One visible, consistent focus ring. Never remove it without a replacement. */
+  :focus-visible {
+    outline: 2px solid var(--accent-text);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  h1, h2, h3 { letter-spacing: -0.028em; text-wrap: balance; }
+  p { text-wrap: pretty; }
+}
+
+@layer components {
+  .shell { @apply mx-auto w-full max-w-shell px-5 sm:px-6 lg:px-8; }
+
+  /* Mono, uppercase, wide-tracked. Used for every eyebrow and every label
+     inside a product mock, which is what makes the mocks read as one product. */
+  .eyebrow {
+    @apply font-mono text-[10.5px] font-medium uppercase tracking-[0.2em] text-ink-3;
+  }
+  .label {
+    @apply font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-3;
+  }
+
+  .btn {
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-xl
+           text-[14px] font-medium transition duration-200 ease-out
+           disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn h-11 bg-accent px-5 font-semibold text-on-accent hover:bg-accent-hover;
+  }
+  .btn-secondary {
+    @apply btn h-11 border border-line-strong bg-raised px-5 text-ink
+           hover:border-accent-line hover:text-accent-text;
+  }
+  .btn-ghost { @apply btn h-9 px-3 text-ink-2 hover:text-ink; }
+  .btn-sm { @apply h-9 px-3.5 text-[13px]; }
+
+  .card {
+    @apply rounded-2xl border border-line bg-raised;
+    box-shadow: var(--shadow-card);
+  }
+
+  /* The chrome shared by every product mock on the page. Having ONE definition
+     is what stops nine mocks drifting into nine design languages. */
+  .mock {
+    @apply overflow-hidden rounded-2xl border border-line bg-raised;
+    box-shadow: var(--shadow-lift);
+  }
+  .mock-bar {
+    @apply flex items-center gap-2.5 border-b border-line px-4 py-2.5;
+    background: var(--surface);
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line
+           bg-surface px-2.5 py-1 font-mono text-[10.5px] uppercase tracking-[0.12em] text-ink-3;
+  }
+
+  .hairline { @apply h-px w-full bg-line; }
+
+  /* The technical blueprint grid. Deliberately faint: it should read as paper
+     texture, not as a foreground element. */
+  .grid-bg {
+    background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+  /* Fades the grid out towards the bottom so it never fights with the content
+     sitting on top of it. */
+  .grid-fade {
+    -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);
+    mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);
+  }
+}
+
+/* ── Motion ──────────────────────────────────────────────────────────────
+   Enforced globally rather than per component. A single component that forgets
+   to check the preference is the whole reason to do it in one place. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
